@@ -68,7 +68,7 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 
-def main():
+# def main():
     load_dotenv()
     st.set_page_config(page_title="Chat with PDFs", page_icon=":books:")
 
@@ -121,6 +121,59 @@ def main():
         # Display bot response immediately
         st.markdown(f"**Reply:**")
         st.markdown(f"{bot_reply}")
+
+def main():
+    load_dotenv()
+    st.set_page_config(page_title="Chat with PDFs", page_icon=":books:")
+
+    if "conversation" not in st.session_state:
+        st.session_state.conversation = None
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    if "pdf_text" not in st.session_state:  # Store PDF text persistently
+        st.session_state.pdf_text = None
+
+    st.write(css, unsafe_allow_html=True)
+
+    # **PDF Upload Section**
+    st.sidebar.header("Upload PDFs")
+    uploaded_files = st.sidebar.file_uploader("Upload your PDFs", accept_multiple_files=True, type=['pdf'])
+
+    if uploaded_files:
+        with st.spinner("Processing PDFs..."):
+            pdf_text = get_pdf_text(uploaded_files)
+            st.session_state.pdf_text = pdf_text  # Save PDF text in session_state
+            text_chunks = get_text_chunks(pdf_text)
+            vectorstore = get_vectorstore(text_chunks)
+            st.session_state.conversation = get_conversation_chain(vectorstore)
+            st.success("PDFs processed successfully! You can now ask questions.")
+
+    # **Display chat history**
+    for message in st.session_state.chat_history:
+        role = "You" if message["role"] == "user" else "Reply"
+        st.markdown(f"**{role}**")
+        st.markdown(f"{message['content']}")
+
+    # **User Input Section**
+    user_question = st.text_input("Ask a question...")
+    
+    if user_question:
+        # Store user input
+        st.session_state.chat_history.append({"role": "user", "content": user_question})
+
+        bot_reply = "I couldn't generate a response."  # Default fallback
+
+        # **Ensure PDF is loaded before answering**
+        if st.session_state.conversation:
+            response = st.session_state.conversation({'question': user_question})
+            if response and 'chat_history' in response and response['chat_history']:
+                bot_reply = response['chat_history'][-1].content
+                st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
+
+        # Display bot response
+        st.markdown(f"**Reply:**")
+        st.markdown(f"{bot_reply}")
+
 
 
 if __name__ == '__main__':
