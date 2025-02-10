@@ -11,6 +11,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from langchain_community.llms import HuggingFaceHub
+import streamlit as st
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -99,8 +100,8 @@ def main():
             st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
         
         # Refresh the page to display the chat
-        # st.experimental_rerun()
-        st.rerun()
+        st.experimental_rerun()
+        # st.rerun()
 
 
 if __name__ == '__main__':
