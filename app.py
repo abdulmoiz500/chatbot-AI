@@ -89,19 +89,36 @@ def main():
     # user_question = st.chat_input("Ask a question...")
     user_question = st.text_input("Ask a question...")
     
+    # if user_question:
+    #     # Store user input
+    #     st.session_state.chat_history.append({"role": "user", "content": user_question})
+        
+    #     # Process and generate a response
+    #     if st.session_state.conversation:
+    #         response = st.session_state.conversation({'question': user_question})
+    #         bot_reply = response['chat_history'][-1].content  # Get the latest bot response
+    #         st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
+        
+    #     # Refresh the page to display the chat
+    #     # st.experimental_rerun()
+    #     # st.rerun()
+    #     st.markdown(f"**Reply:**")
+    #     st.markdown(f"{bot_reply}")
+
     if user_question:
         # Store user input
         st.session_state.chat_history.append({"role": "user", "content": user_question})
-        
+
+        bot_reply = "I couldn't generate a response."  # Default value to avoid errors
+
         # Process and generate a response
         if st.session_state.conversation:
             response = st.session_state.conversation({'question': user_question})
-            bot_reply = response['chat_history'][-1].content  # Get the latest bot response
-            st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
-        
-        # Refresh the page to display the chat
-        # st.experimental_rerun()
-        # st.rerun()
+            if response and 'chat_history' in response and response['chat_history']:
+                bot_reply = response['chat_history'][-1].content  # Get the latest bot response
+                st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
+
+        # Display bot response immediately
         st.markdown(f"**Reply:**")
         st.markdown(f"{bot_reply}")
 
