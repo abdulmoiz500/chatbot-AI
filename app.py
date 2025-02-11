@@ -83,7 +83,7 @@ def main():
         st.markdown(f"{message['content']}")
 
     # User input at the bottom
-    user_question = st.chat_input("Ask a question...")
+    user_question = st.text_input("Ask a question...")
     
     if user_question:
         # Store user input
