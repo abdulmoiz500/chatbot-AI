@@ -51,13 +51,11 @@ def main():
     load_dotenv()
     st.set_page_config(page_title="Chat with PDFs", page_icon=":books:")
 
-    # Initialize session state variables
+    # Initialize session state
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
-    if "user_input" not in st.session_state:  # Initialize user_input
-        st.session_state.user_input = ""
 
     st.write(css, unsafe_allow_html=True)
 
@@ -67,11 +65,11 @@ def main():
         st.markdown(f"**{role}**")
         st.markdown(f"{message['content']}")
 
-    # User input
+    # User input (Text Input automatically manages session state)
     user_question = st.text_input("Ask a question...", key="user_input")
 
     if user_question:
-        # Store user input and clear the text input
+        # Store user input
         st.session_state.chat_history.append({"role": "user", "content": user_question})
 
         # Process and generate a response
@@ -80,10 +78,11 @@ def main():
             bot_reply = response['chat_history'][-1].content  # Get the latest bot response
             st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
 
-        # Reset the input field
-        st.session_state.user_input = ""  # Clear input
+        # 🔹 NO NEED TO RESET user_input manually! Streamlit handles it automatically.
 
-        st.experimental_rerun()
+        st.experimental_rerun()  # Refresh to update chat history
+
+
 
 
 if __name__ == '__main__':
