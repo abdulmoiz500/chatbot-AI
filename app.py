@@ -69,10 +69,13 @@ def main():
     load_dotenv()
     st.set_page_config(page_title="Chat with PDFs", page_icon=":books:")
 
+    # Initialize session state
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
+    if "user_input" not in st.session_state:  
+        st.session_state.user_input = ""
 
     st.write(css, unsafe_allow_html=True)
 
@@ -82,22 +85,22 @@ def main():
         st.markdown(f"**{role}**")
         st.markdown(f"{message['content']}")
 
-    # User input at the bottom
-    user_question = st.text_input("Ask a question...")
-    
+    # User input (Stored in session state)
+    user_question = st.chat_input("Ask a question...", key="user_input")
+
     if user_question:
         # Store user input
         st.session_state.chat_history.append({"role": "user", "content": user_question})
-        
+
         # Process and generate a response
         if st.session_state.conversation:
             response = st.session_state.conversation({'question': user_question})
-            bot_reply = response['chat_history'][-1].content  # Get the latest bot response
+            bot_reply = response['chat_history'][-1].content  # Get latest bot response
             st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
-        
-        # Refresh the page to display the chat
-        st.experimental_rerun()
-        # st.rerun()
+
+        # 🔹 Reset user input to prevent infinite loop
+        st.session_state.user_input = ""  
+        st.experimental_rerun()  # Refresh UI
 
 
 if __name__ == '__main__':
