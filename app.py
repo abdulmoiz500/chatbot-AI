@@ -96,8 +96,8 @@ def main():
             st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
         
         # Refresh the page to display the chat
-        st.experimental_rerun()
-        # st.rerun()
+        # st.experimental_rerun()
+        st.rerun()
 
 
 if __name__ == '__main__':
