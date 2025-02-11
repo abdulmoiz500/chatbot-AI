@@ -51,10 +51,13 @@ def main():
     load_dotenv()
     st.set_page_config(page_title="Chat with PDFs", page_icon=":books:")
 
+    # Initialize session state variables
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
+    if "user_input" not in st.session_state:  # Initialize user_input
+        st.session_state.user_input = ""
 
     st.write(css, unsafe_allow_html=True)
 
@@ -70,7 +73,6 @@ def main():
     if user_question:
         # Store user input and clear the text input
         st.session_state.chat_history.append({"role": "user", "content": user_question})
-        st.session_state.user_input = ""  # Clear input field
 
         # Process and generate a response
         if st.session_state.conversation:
@@ -78,8 +80,14 @@ def main():
             bot_reply = response['chat_history'][-1].content  # Get the latest bot response
             st.session_state.chat_history.append({"role": "bot", "content": bot_reply})
 
-        # Reset the text input field to avoid infinite loop
+        # Reset the input field
+        st.session_state.user_input = ""  # Clear input
+
         st.experimental_rerun()
+
+
+if __name__ == '__main__':
+    main()
 
 
 if __name__ == '__main__':
